@@ -1,4 +1,4 @@
-# Stable Diffusion
+# YOLOv6
 #### A4000
 [![Gradient](https://assets.paperspace.io/img/gradient-badge.svg)](https://console.paperspace.com/github.com/AicademyHK/YOLOv6?machine=A4000&container=paperspace/gradient-base:pt211-tf215-cudatk120-py311-20240202)
 #### RTX4000
