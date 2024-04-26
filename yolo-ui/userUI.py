@@ -12,6 +12,8 @@ def webcam_inference(image):
 
 def create_interface():
     labels = load_labels(os.path.join(os.getcwd(), "data/id_labels.ini"))
+    labels_str = ",".join(labels)
+    font_size = 1
 
     with gr.Blocks() as demo:
         with gr.Tab("Model & Inference"):
@@ -21,13 +23,12 @@ def create_interface():
                 height_input = gr.Textbox(label="Input Height", placeholder="640", type="text", value="640")
                 provider_dropdown = gr.Dropdown(label="Select Execution Provider", choices=["CPU", "CUDA", "TensorRT"])
                 load_button = gr.Button("Load Model")
-            
+
             with gr.Row():
-                label_inputs1 = [gr.Textbox(value=labels[i], label=f"Class {i}") for i in range(5)]
-            with gr.Row():
-                label_inputs2 = [gr.Textbox(value=labels[i+5], label=f"Class {i+5}") for i in range(5)]
-            update_button = gr.Button("Update Labels")
-            
+                label_input = gr.Textbox(label="Enter Class Labels (comma-separated)", placeholder="person,bicycle,car,motorcycle,airplane,bus,train,truck,boat,traffic light", value=labels_str)
+                font_size_slider = gr.Slider(label="Label Font Size", minimum=0.5, maximum=3, value=1, step=0.1)
+                update_button = gr.Button("Update Labels")
+
             with gr.Row():
                 image_input = gr.Image(sources=["upload"], label="Upload Image")
                 image_output = gr.Image(label="Processed Image")
@@ -39,13 +40,18 @@ def create_interface():
                 inputs=[file_input, width_input, height_input, provider_dropdown],
                 outputs=[]
             )
-            update_button.click(lambda *args: gr.update(value=update_labels(*args)), inputs=label_inputs1+label_inputs2, outputs=[])
-            infer_button.click(process_image, inputs=image_input, outputs=image_output)
-        
+            update_button.click(
+                lambda label_str, font_size: gr.update(value=update_labels(*label_str.split(',')), font_size=font_size),
+                inputs=[label_input, font_size_slider],
+                outputs=[]
+            )
+            infer_button.click(lambda img, font_size: process_image(img, font_size), inputs=[image_input, font_size_slider], outputs=image_output)
+            
+
         with gr.Tab("Real-Time Detection"):
             with gr.Row():
                 webcam_input = gr.Image(sources=["webcam"], label="Webcam Input")
                 webcam_output = gr.Image(label="Webcam Output")
-            webcam_input.change(webcam_inference, inputs=webcam_input, outputs=webcam_output)
+            webcam_input.change(lambda img, font_size: webcam_inference(img, font_size), inputs=[webcam_input, font_size_slider], outputs=webcam_output)
 
     return demo

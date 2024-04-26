@@ -7,8 +7,7 @@ import cv2 as cv
 
 # Global variables
 model = None
-labels = ["Class 0", "Class 1", "Class 2", "Class 3", "Class 4", 
-          "Class 5", "Class 6", "Class 7", "Class 8", "Class 9"]
+labels = []
 input_width = 640
 input_height = 640
 
@@ -55,7 +54,10 @@ CLASS_COLORS = [
     (128, 128, 0)   # Class 9: Dark Cyan
 ]
 
-def draw_boxes(img, boxes, class_ids, scores):
+def get_class_color(class_id):
+    return CLASS_COLORS[class_id % 10]
+
+def draw_boxes(img, boxes, class_ids, scores, font_size):
     """
     Draw bounding boxes and labels on the image.
     """
@@ -64,14 +66,14 @@ def draw_boxes(img, boxes, class_ids, scores):
 
         # Extract coordinates
         x1, y1, x2, y2 = box
-        color = CLASS_COLORS[class_id % len(CLASS_COLORS)]
+        color = get_class_color(class_id)
         label = f"{labels[class_id]}: {score:.2f}"
         cv.rectangle(img, (x1, y1), (x2, y2), color, 2)
-        (text_width, text_height), _ = cv.getTextSize(label, cv.FONT_HERSHEY_SIMPLEX, 1, 1)
+        (text_width, text_height), _ = cv.getTextSize(label, cv.FONT_HERSHEY_SIMPLEX, font_size, 1)
         cv.rectangle(img, (x1, y1 - int(1.3 * text_height)), (x1 + text_width, y1), color, -1)
-        cv.putText(img, label, (x1, y1), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 1, cv.LINE_AA)
+        cv.putText(img, label, (x1, y1), cv.FONT_HERSHEY_SIMPLEX, font_size, (255, 255, 255), 1, cv.LINE_AA)
 
-def process_image(img):
+def process_image(img, font_size):
     if model is None:
         return "Model not loaded!", img
 
@@ -93,6 +95,7 @@ def process_image(img):
 
     # Run inference
     outname = [i.name for i in model.get_outputs()]
+    print(outname)
     num_dets, det_boxes, det_scores, det_classes = model.run(outname, {'images': im})
 
     # Convert outputs to flat lists and filter
@@ -111,7 +114,7 @@ def process_image(img):
          for i, coord in enumerate(box)] for box in det_boxes]
 
     # Draw bounding boxes and labels on the original image
-    draw_boxes(original_img, det_boxes_scaled, det_classes, det_scores)
+    draw_boxes(original_img, det_boxes_scaled, det_classes, det_scores, font_size)
 
     return original_img
 
@@ -138,6 +141,7 @@ def load_model(model_path, width, height, provider):
 def update_labels(*args):
     global labels
     labels = list(args)
+    print(labels)
     #get current directory and join it with the path to the labels file)
     print(os.path.join(os.getcwd(), "data/id_labels.ini"))
     save_labels(os.path.join(os.getcwd(), "data/id_labels.ini"))
@@ -155,7 +159,7 @@ def load_labels(path):
     config.read(path)
     global labels
     if 'Labels' in config:
-        labels = [config['Labels'].get(f'Class{i}', '') for i in range(10)]
+        labels = [config['Labels'].get(f'Class{i}', '') for i in range(len(config['Labels']))]
     else:
-        labels = [''] * 10  # Initialize with empty strings if no labels are found
+        labels = []
     return labels
