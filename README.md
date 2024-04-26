@@ -1,10 +1,10 @@
 # YOLOv6
 #### A4000
-[![Gradient](https://assets.paperspace.io/img/gradient-badge.svg)](https://console.paperspace.com/github.com/AicademyHK/YOLOv6?machine=A4000&container=paperspace/gradient-base:pt211-tf215-cudatk120-py311-20240202)
+[![Gradient](https://assets.paperspace.io/img/gradient-badge.svg)](https://console.paperspace.com/github/AicademyHK/YOLOv6?machine=A4000&container=paperspace/gradient-base:pt211-tf215-cudatk120-py311-20240202)
 #### RTX4000
-[![Gradient](https://assets.paperspace.io/img/gradient-badge.svg)](https://console.paperspace.com/github.com/AicademyHK/YOLOv6?machine=RTX4000&container=paperspace/gradient-base:pt211-tf215-cudatk120-py311-20240202)
+[![Gradient](https://assets.paperspace.io/img/gradient-badge.svg)](https://console.paperspace.com/github/AicademyHK/YOLOv6?machine=RTX4000&container=paperspace/gradient-base:pt211-tf215-cudatk120-py311-20240202)
 #### P5000
-[![Gradient](https://assets.paperspace.io/img/gradient-badge.svg)](https://console.paperspace.com/github.com/AicademyHK/YOLOv6?machine=P5000&container=paperspace/gradient-base:pt211-tf215-cudatk120-py311-20240202)
+[![Gradient](https://assets.paperspace.io/img/gradient-badge.svg)](https://console.paperspace.com/github/AicademyHK/YOLOv6?machine=P5000&container=paperspace/gradient-base:pt211-tf215-cudatk120-py311-20240202)
 
 <p align="center">
   <img src="assets/banner-YOLO.png" align="middle" width = "1000" />
