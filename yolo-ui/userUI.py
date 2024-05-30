@@ -1,14 +1,6 @@
 import gradio as gr
-from onnxbackend import load_model, update_labels, process_image, load_labels
+from onnxbackend import load_model, update_labels, process_image, load_labels, process_video
 import os
-from PIL import Image
-
-def webcam_inference(image):
-    if model is None:
-        return image
-    pil_image = Image.fromarray(image)
-    result_text, processed_image = process_image(pil_image)
-    return processed_image
 
 def create_interface():
     labels = load_labels(os.path.join(os.getcwd(), "data/id_labels.ini"))
@@ -47,11 +39,25 @@ def create_interface():
             )
             infer_button.click(lambda img, font_size: process_image(img, font_size), inputs=[image_input, font_size_slider], outputs=image_output)
             
-
-        with gr.Tab("Real-Time Detection"):
+        with gr.Tab("Video Inference"):
             with gr.Row():
-                webcam_input = gr.Image(sources=["webcam"], label="Webcam Input")
-                webcam_output = gr.Image(label="Webcam Output")
-            webcam_input.change(lambda img, font_size: webcam_inference(img, font_size), inputs=[webcam_input, font_size_slider], outputs=webcam_output)
+                video_input = gr.Video(label="Upload Video", sources="upload")
+                video_output_frames = gr.Image(label="Output Frames")
+                video_output_file = gr.Video(label="Output Video")
+            video_infer_button = gr.Button("Run Video Inference")
+
+            def process_video_and_play(video_path):
+                for frame, output_path in process_video(video_path):
+                    if frame is None:
+                        break
+                    # This will update the image with each frame
+                    yield frame, None
+                yield None, output_path
+
+            video_infer_button.click(
+                process_video_and_play,
+                inputs=video_input,
+                outputs=[video_output_frames, video_output_file]
+            )
 
     return demo

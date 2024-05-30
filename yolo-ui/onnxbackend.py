@@ -11,6 +11,39 @@ labels = []
 input_width = 640
 input_height = 640
 
+def process_video(video_path):
+    cap = cv.VideoCapture(video_path)
+    frame_width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
+    frame_height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
+    fps = int(cap.get(cv.CAP_PROP_FPS))
+
+    # Get the directory of the current script file
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    output_path = os.path.join(script_dir, 'processed_video.mp4')
+
+    out = cv.VideoWriter(output_path, cv.VideoWriter_fourcc(*'mp4v'), fps, (frame_width, frame_height))
+
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        pil_image = Image.fromarray(cv.cvtColor(frame, cv.COLOR_BGR2RGB))
+        processed_frame = process_image(pil_image, 1)
+        processed_frame = cv.cvtColor(np.array(processed_frame), cv.COLOR_RGB2BGR)
+        out.write(processed_frame)
+
+        # Display the processed frame
+        try:
+            yield processed_frame, None
+        except ConnectionResetError:
+            print("Connection reset by peer. Continuing...")
+            continue
+
+    cap.release()
+    out.release()
+    yield None, output_path
+
 # Helper function to format the screenshot to the correct size and format for the model
 def letterbox(im, new_shape=(640, 640), color=(114, 114, 114), auto=True, scaleup=True, stride=32):
     # Resize and pad image while meeting stride-multiple constraints
