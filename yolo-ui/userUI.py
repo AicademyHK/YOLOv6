@@ -3,7 +3,7 @@ from onnxbackend import load_model, update_labels, process_image, load_labels, p
 import os
 
 def create_interface():
-    labels = load_labels(os.path.join(os.getcwd(), "data/id_labels.ini"))
+    labels = load_labels("/notebooks/data/id_labels.ini")
     labels_str = ",".join(labels)
     font_size = 1
 
